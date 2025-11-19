@@ -162,7 +162,7 @@ leaf_energy_balance = function(
   DHEAT <- 2.15e-05         # molecular diffusivity for heat
 
   # Get leaf VPD
-  Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD)
+  Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD, Pa = Patm)
 
   # Convert temperatures to Kelvin
   Tair_k <- Tair + 273.15
@@ -175,7 +175,7 @@ leaf_energy_balance = function(
   LHV <- (H2OLV0 - 2365 * Tair) * H2OMW
 
   # Const s in Penman-Monteith equation  (Pa K-1)
-  SLOPE <- (plantecophys::esat(Tair + 0.1) - plantecophys::esat(Tair))/0.1
+  SLOPE <- (plantecophys::esat(Tair + 0.1, Pa = Patm) - plantecophys::esat(Tair, Pa = Patm))/0.1
 
   # Radiation conductance (mol m-2 s-1)
   Gradiation <- 4 * Boltz * Tair_k^3 * Emissivity/(CPAIR *
@@ -197,7 +197,7 @@ leaf_energy_balance = function(
   Rsol <- 2 * PPFD/UMOLPERJ # W m-2
 
   # Isothermal net radiation (Leuning et al. 1995, Appendix)
-  ea <- plantecophys::esat(Tair) - 1000 * Dleaf
+  ea <- plantecophys::esat(Tair, Pa = Patm) - 1000 * Dleaf
   ema <- 0.642 * (ea/Tair_k)^(1/7)
   Rnetiso <- LeafAbs * Rsol - (1 - ema) * Boltz * Tair_k^4 # isothermal net radiation
 
@@ -288,7 +288,7 @@ calc_gw = function (
   GAMMA <- CPAIR * AIRMA * Patm * 1000/LHV
 
   # Const s in Penman-Monteith equation  (Pa K-1)
-  SLOPE <- (plantecophys::esat(Tair + 0.1) - plantecophys::esat(Tair))/0.1
+  SLOPE <- (plantecophys::esat(Tair + 0.1, Pa = Patm) - plantecophys::esat(Tair, Pa = Patm))/0.1
 
   # See Leuning et al (1995) PC&E 18:1183-1200 Appendix E
   # Boundary layer conductance for heat - single sided, forced convection
@@ -306,7 +306,7 @@ calc_gw = function (
   Rsol <- 2 * PPFD/UMOLPERJ # W m-2
 
   # Get leaf VPD
-  Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD)
+  Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD, Pa = Patm)
 
   # Penman-Monteith equation
   g_w = GAMMA * Gbh * 1/((SLOPE * Rsol + Dleaf*1000 * Gbh * CPAIR * AIRMA)/(LHV * E/1000) - SLOPE)
@@ -382,7 +382,7 @@ calc_A = function(Tair = 25,
   }
 
   # Get leaf VPD
-  Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD)
+  Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD, Pa = Patm)
 
   if (net == FALSE) {
     Photosyn_out = mapply(plantecophys::Photosyn, VPD = Dleaf,
