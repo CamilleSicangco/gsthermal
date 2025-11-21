@@ -13,7 +13,7 @@ thermal_cost(
   VPD = 1.5,
   PPFD = 1000,
   Patm = 101.325,
-  Wind = 2,
+  Wind = 5,
   Wleaf = 0.025,
   LeafAbs = 0.5,
   Tcrit = 50,

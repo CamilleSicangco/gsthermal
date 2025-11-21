@@ -9,7 +9,7 @@ calc_Rd(
   VPD = 1.5,
   PPFD = 1000,
   E = 2,
-  Wind = 2,
+  Wind = 5,
   Patm = 101.325,
   Wleaf = 0.025,
   LeafAbs = 0.5,
