@@ -214,7 +214,7 @@ C_gain_alt = function (P,
                      LeafAbs = LeafAbs)
   g_w = calc_gw(E, Tleaf, Patm, Tair, VPD, PPFD, Wind,
                 Wleaf)
-  Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD)
+  Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD, Pa = 101.325)
 
   # Calculate supply A from Fick's law
   g_ws = t(array(g_w, dim = c(500, length(E))))
