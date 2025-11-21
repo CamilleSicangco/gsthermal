@@ -102,7 +102,7 @@ calc_Tleaf = function(
     VPD = 1.5,
     E = 0.2,
     PPFD = 1000,
-    Wind = 2,
+    Wind = 5,
     Patm = 101.325,
     Wleaf = 0.025,
     LeafAbs = 0.5
@@ -140,7 +140,7 @@ leaf_energy_balance = function(
     E = 0.2,
     PPFD = 1500,
     Patm = 101.325,
-    Wind = 2, # m s-1
+    Wind = 5, # m s-1
     Wleaf = 0.025, # m
     LeafAbs = 0.5,
     returnwhat = c("balance", "fluxes")
@@ -267,7 +267,7 @@ calc_gw = function (
     Tair = 25,
     VPD = 1.5,
     PPFD = 1000,
-    Wind = 8,
+    Wind = 5,
     Wleaf = 0.025) {
 
   # Constants
@@ -356,7 +356,7 @@ calc_A = function(Tair = 25,
                   PPFD = 1000,
                   Patm = 101.325,
                   E = 2,
-                  Wind = 2,
+                  Wind = 5,
                   Wleaf = 0.025,
                   LeafAbs = 0.5,
                   Ca = 400,
@@ -451,7 +451,7 @@ calc_gr = function(
 #' @return Boundary layer conductance to forced convection, mol m-2 s-1
 calc_gHa = function(
     Tair = 25,
-    Wind = 2,
+    Wind = 5,
     Patm = 101.325,
     Wleaf = 0.025
 )
@@ -510,7 +510,7 @@ calc_Rd = function(Tair = 25,
                    VPD = 1.5,
                    PPFD = 1000,
                    E = 2,
-                   Wind = 2,
+                   Wind = 5,
                    Patm = 101.325,
                    Wleaf = 0.025,
                    LeafAbs = 0.5,
