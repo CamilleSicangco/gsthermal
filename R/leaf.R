@@ -306,10 +306,10 @@ calc_gw = function (
   Rsol <- 2 * PPFD/UMOLPERJ # W m-2
 
   # Get leaf VPD
-  Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD, Pa = Patm)
+  #Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD, Pa = Patm)
 
   # Penman-Monteith equation
-  g_w = GAMMA * Gbh * 1/((SLOPE * Rsol + Dleaf*1000 * Gbh * CPAIR * AIRMA)/(LHV * E/1000) - SLOPE)
+  g_w = GAMMA * Gbh * 1/((SLOPE * Rsol + VPD*1000 * Gbh * CPAIR * AIRMA)/(LHV * E/1000) - SLOPE)
   return(g_w)
 }
 
