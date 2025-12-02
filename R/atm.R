@@ -31,23 +31,6 @@ calc_Rnet = function(Tair = 25,
   return(Rnet)
 }
 
-#' Saturation vapor pressure at a given temperature
-#'
-#' @param T Temperature, deg C
-#' @return Saturation vapor pressure, kPa
-#' @export
-vpsat = function(
-    T = 25
-)
-{
-  # Constants
-  a = 0.61078 # kPa
-  b = 17.27 # unitless
-  c = 237.3 # deg C
-
-  vpsat = a*exp(b*T/(T+c)) #kPa
-  return(vpsat)
-}
 
 #' Calculate atmospheric emissivity
 #'
@@ -64,7 +47,7 @@ calc_emissivity = function(Tair = 25,
   sigma = 5.67e-8 # Stefan-Boltzman constant, W m-2 K-4
 
   TairK = Tair + 273 # air temperature in Kelvin
-  ea = (vpsat(Tair) - 4)*1e3
+  ea = (plantecophys::esat(Tair) - 4)*1e3
   emissivity = (0.031 * ea + 2.84 * TairK - 522.5) / (sigma * TairK ** 4.)
   return(emissivity)
 }
