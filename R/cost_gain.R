@@ -229,7 +229,7 @@ C_gain_alt = function (P,
                         Ca = Ca, PPFD = PPFD, Tleaf = Tleaves,
                         Patm = Patm,
                         Ci = Cis, Jmax = Jmax, Vcmax = Vcmax,
-                        Rd0 = Rd0, TrefR = TrefR, new_JT = FALSE,
+                        Rd0 = Rd0, TrefR = TrefR,
                         ...)
 
   if (isTRUE(net)) {
