@@ -235,8 +235,8 @@ C_gain_alt = function (P,
   if (isTRUE(net)) {
     A_demand = as.numeric(Photosyn_out[2,])
   } else {
-    Anet = as.numeric(Photosyn_out)[2,]
-    Rd = as.numeric(Photosyn_out)[8,]
+    Anet = as.numeric(Photosyn_out[2,])
+    Rd = as.numeric(Photosyn_out[8,])
     A_demand = Anet + Rd
   }
   dim(A_demand) = c(500, 500)
