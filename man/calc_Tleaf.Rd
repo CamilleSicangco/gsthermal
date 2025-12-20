@@ -12,7 +12,9 @@ calc_Tleaf(
   Wind = 5,
   Patm = 101.325,
   Wleaf = 0.025,
-  LeafAbs = 0.5
+  LeafAbs = 0.5,
+  albedo = 0.15,
+  epsilon = 0.97
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ calc_Tleaf(
 \item{Wleaf}{Leaf width, m}
 
 \item{LeafAbs}{Leaf absorptance of solar radiation (0-1)}
+
+\item{albedo}{Leaf albedo, unitless}
+
+\item{epsilon}{Leaf emissivity, unitless}
 }
 \value{
 Leaf temperature, deg C

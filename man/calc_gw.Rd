@@ -12,13 +12,15 @@ calc_gw(
   VPD = 1.5,
   PPFD = 1000,
   Wind = 5,
-  Wleaf = 0.025
+  Wleaf = 0.025,
+  albedo = 0.15,
+  epsilon = 0.97
 )
 }
 \arguments{
 \item{E}{Transpiration rate, mmol m-2 s-1}
 
-\item{Tleaf}{Leaf temperature, deg C}
+\item{Tleaf}{Leaf temperature, deg C#}
 
 \item{Patm}{Atmospheric pressure, kPa}
 
@@ -31,6 +33,10 @@ calc_gw(
 \item{Wind}{Wind speed above the leaf boundary layer, m s-1}
 
 \item{Wleaf}{Leaf width, m}
+
+\item{albedo}{Leaf albedo, unitless}
+
+\item{epsilon}{Leaf emissivity, unitless}
 }
 \value{
 Stomatal conductance to water vapor, mol m-2 s-1

@@ -47,7 +47,7 @@ calc_emissivity = function(Tair = 25,
   sigma = 5.67e-8 # Stefan-Boltzman constant, W m-2 K-4
 
   TairK = Tair + 273 # air temperature in Kelvin
-  ea = (plantecophys::esat(Tair) - 4)*1e3
+  ea = (plantecophys::esat(Tair) - 4)
   emissivity = (0.031 * ea + 2.84 * TairK - 522.5) / (sigma * TairK ** 4.)
   return(emissivity)
 }

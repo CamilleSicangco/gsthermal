@@ -76,6 +76,8 @@ calc_Tleaf_fn <- function(
 #' @param Patm Atmospheric pressure, kPa
 #' @param Wleaf Leaf width, m
 #' @param LeafAbs Leaf absorptance of solar radiation (0-1)
+#' @param albedo Leaf albedo, unitless
+#' @param epsilon Leaf emissivity, unitless
 #'
 #' @return Leaf temperature, deg C
 #'
@@ -105,12 +107,14 @@ calc_Tleaf = function(
     Wind = 5,
     Patm = 101.325,
     Wleaf = 0.025,
-    LeafAbs = 0.5
+    LeafAbs = 0.5,
+    albedo = 0.15,
+    epsilon = 0.97
 )
 {
   fn = Vectorize(calc_Tleaf_fn)
   out = fn(E = E, Tair = Tair, PPFD = PPFD, VPD = VPD, Wind = Wind, Patm = Patm,
-           Wleaf = Wleaf, LeafAbs = LeafAbs)
+           Wleaf = Wleaf, LeafAbs = LeafAbs, albedo = albedo, epsilon = epsilon)
   return(out)
 }
 
@@ -130,6 +134,8 @@ calc_Tleaf = function(
 #' @param Patm Atmospheric pressure, kPa
 #' @param Wleaf Leaf width, m
 #' @param LeafAbs Leaf absorptance of solar radiation (0-1)
+#' @param albedo Leaf albedo, unitless
+#' @param epsilon Leaf emissivity, unitless
 #'
 #' @return Leaf temperature, deg C
 #' @noRd
@@ -143,7 +149,9 @@ leaf_energy_balance = function(
     Wind = 5, # m s-1
     Wleaf = 0.025, # m
     LeafAbs = 0.5,
-    returnwhat = c("balance", "fluxes")
+    returnwhat = c("balance", "fluxes"),
+    albedo = 0.15,
+    epsilon = 0.97
     )
 {
   returnwhat <- match.arg(returnwhat)
@@ -194,7 +202,8 @@ leaf_energy_balance = function(
   Gbh <- 2 * (Gbhfree + Gbhforced)
 
   # Rnet
-  Rsol <- 2 * PPFD/UMOLPERJ # W m-2
+  #Rsol <- 2 * PPFD/UMOLPERJ # W m-2
+  Rsol <- calc_Rnet(Tair, PPFD, VPD, albedo, epsilon)
 
   # Isothermal net radiation (Leuning et al. 1995, Appendix)
   ea <- plantecophys::esat(Tair, Pa = Patm) - 1000 * Dleaf
@@ -239,7 +248,7 @@ leaf_energy_balance = function(
 #' Stomatal conductance
 #'
 #' @inheritParams calc_Tleaf
-#' @param Tleaf Leaf temperature, deg C
+#' @param Tleaf Leaf temperature, deg C#
 #'
 #' @return Stomatal conductance to water vapor, mol m-2 s-1
 #' @export
@@ -268,7 +277,10 @@ calc_gw = function (
     VPD = 1.5,
     PPFD = 1000,
     Wind = 5,
-    Wleaf = 0.025) {
+    Wleaf = 0.025,
+    albedo = 0.15,
+    epsilon = 0.97
+    ) {
 
   # Constants
   H2OLV0 <- 2.501e6         # J kg-1
@@ -303,7 +315,8 @@ calc_gw = function (
   Gbh <- 2 * (Gbhfree + Gbhforced)
 
   # Rnet
-  Rsol <- 2 * PPFD/UMOLPERJ # W m-2
+  #Rsol <- 2 * PPFD/UMOLPERJ # W m-2
+  Rsol <- calc_Rnet(Tair, PPFD, VPD, albedo, epsilon)
 
   # Get leaf VPD
   Dleaf = plantecophys::VPDairToLeaf(Tleaf = Tleaf, Tair = Tair, VPD = VPD, Pa = Patm)
@@ -387,7 +400,7 @@ calc_A = function(Tair = 25,
   if (net == FALSE) {
     Photosyn_out = mapply(plantecophys::Photosyn, VPD = Dleaf,
                           Ca = Ca, PPFD = PPFD, Tleaf = Tleaf, Patm = Patm,
-                          GS = g_w, Rd = 0, Jmax = Jmax, Vcmax = Vcmax, g1 = g1,
+                          GS = g_w, Rd0 = 0, Jmax = Jmax, Vcmax = Vcmax, g1 = g1,
                           g0 = g0, ...)
     Anet = as.numeric(Photosyn_out[2, ])
     Rd = as.numeric(Photosyn_out[8, ])
@@ -402,8 +415,7 @@ calc_A = function(Tair = 25,
       A = as.numeric(Photosyn_out[2, ])
     }
     else {
-      Rd = Rd0 * exp(0.1012 * (Tleaf - TrefR) - 5e-04 *
-                       (Tleaf^2 - TrefR^2))
+      Rd = Rd0 * exp(0.1178 * (Tleaf - TrefR) - 7.017e-4 * (Tleaf^2 - TrefR^2))
       Photosyn_out = mapply(plantecophys::Photosyn, VPD = Dleaf,
                             Ca = Ca, PPFD = PPFD, Tleaf = Tleaf, Patm = Patm,
                             GS = g_w, Rd = 0, Jmax = Jmax, Vcmax = Vcmax,
@@ -520,6 +532,6 @@ calc_Rd = function(Tair = 25,
 {
   Tleaf = calc_Tleaf(Tair = Tair, VPD = VPD, PPFD = PPFD, E = E, Wind = Wind,
                       Patm = Patm, Wleaf = Wleaf, LeafAbs = LeafAbs)
-  Rd = Rd0 * exp(0.1012 * (Tleaf - TrefR) - 5e-04 * (Tleaf^2 - TrefR^2))
+  Rd = Rd0 * exp(0.1178 * (Tleaf - TrefR) - 7.017e-4 * (Tleaf^2 - TrefR^2))
   return(Rd)
 }
