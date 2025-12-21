@@ -78,6 +78,8 @@ calc_Tleaf_fn <- function(
 #' @param LeafAbs Leaf absorptance of solar radiation (0-1)
 #' @param albedo Leaf albedo, unitless
 #' @param epsilon Leaf emissivity, unitless
+#' @param gs_feedback TRUE or FALSE
+#' @param StomatalRatio The stomatal ratio (cf. Licor6400 terminology), if it is 1, leaves have stomata only on one side (hypostomatous), 2 for leaves with stomata on both sides (amphistomatous).
 #'
 #' @return Leaf temperature, deg C
 #'
@@ -109,12 +111,15 @@ calc_Tleaf = function(
     Wleaf = 0.025,
     LeafAbs = 0.5,
     albedo = 0.15,
-    epsilon = 0.97
+    epsilon = 0.97,
+    gs_feedback = TRUE,
+    StomatalRatio = 2
 )
 {
   fn = Vectorize(calc_Tleaf_fn)
   out = fn(E = E, Tair = Tair, PPFD = PPFD, VPD = VPD, Wind = Wind, Patm = Patm,
-           Wleaf = Wleaf, LeafAbs = LeafAbs, albedo = albedo, epsilon = epsilon)
+           Wleaf = Wleaf, LeafAbs = LeafAbs, albedo = albedo, epsilon = epsilon,
+           gs_feedback = gs_feedback, StomatalRatio = StomatalRatio)
   return(out)
 }
 
@@ -136,6 +141,8 @@ calc_Tleaf = function(
 #' @param LeafAbs Leaf absorptance of solar radiation (0-1)
 #' @param albedo Leaf albedo, unitless
 #' @param epsilon Leaf emissivity, unitless
+#' @param gs_feedback TRUE or FALSE
+#' @param StomatalRatio The stomatal ratio (cf. Licor6400 terminology), if it is 1, leaves have stomata only on one side (hypostomatous), 2 for leaves with stomata on both sides (amphistomatous).
 #'
 #' @return Leaf temperature, deg C
 #' @noRd
@@ -151,7 +158,9 @@ leaf_energy_balance = function(
     LeafAbs = 0.5,
     returnwhat = c("balance", "fluxes"),
     albedo = 0.15,
-    epsilon = 0.97
+    epsilon = 0.97,
+    gs_feedback = TRUE,
+    StomatalRatio = 2
     )
 {
   returnwhat <- match.arg(returnwhat)
@@ -212,8 +221,16 @@ leaf_energy_balance = function(
 
   GAMMA <- CPAIR * AIRMA * Patm * 1000/LHV
 
-  # Convert transpiration to mol m-2 s-1
-  ET <- E/1000
+  # Get ET
+  if (isFALSE(gs_feedback)){
+  Gbw <- StomatalRatio * 1.075 * Gbh # Boundary layer conductance to water
+  Gbhr <- Gbh + 2 * Gradiation
+  ET <- (1/LHV) * (SLOPE * Rnetiso + 1000 * VPD * Gbh * CPAIR *
+                     AIRMA)/(SLOPE + GAMMA * Gbhr/Gbw)
+  } else {
+    # Convert transpiration to mol m-2 s-1
+    ET <- E/1000
+  }
 
   # Latent heat loss
   lambdaET <- LHV * ET
@@ -383,13 +400,18 @@ calc_A = function(Tair = 25,
                   g0 = 0.003,
                   g_w = NULL,
                   Tleaf = NULL,
+                  albedo = 0.15,
+                  epsilon = 0.97,
+                  gs_feedback = TRUE,
+                  StomatalRatio = 2,
                   ...
 )
 {
   if (is.null(g_w) & is.null(Tleaf)) {
     Tleaf = calc_Tleaf(Tair = Tair, VPD = VPD, PPFD = PPFD,
                        E = E, Wind = Wind, Patm = Patm, Wleaf = Wleaf,
-                       LeafAbs = LeafAbs)
+                       LeafAbs = LeafAbs, albedo = albedo, epsilon = epsilon,
+                       gs_feedback = gs_feedback, StomatalRatio = StomatalRatio)
     g_w = calc_gw(E, Tleaf, Patm, Tair, VPD, PPFD, Wind,
                   Wleaf)
   }

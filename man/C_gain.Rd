@@ -25,6 +25,10 @@ C_gain(
   Rd0 = 0.92,
   TrefR = 25,
   netOrig = TRUE,
+  albedo = 0.15,
+  epsilon = 0.97,
+  gs_feedback = TRUE,
+  StomatalRatio = 2,
   ...
 )
 }
@@ -74,6 +78,14 @@ is gross photosynthesis}
 
 \item{netOrig}{TRUE if net photosynthesis is to be calculated within
 \code{plantecophys::Photosyn}. FALSE if Anet is to be calculated as Agross - Rd.}
+
+\item{albedo}{Leaf albedo, unitless}
+
+\item{epsilon}{Leaf emissivity, unitless}
+
+\item{gs_feedback}{TRUE or FALSE}
+
+\item{StomatalRatio}{The stomatal ratio (cf. Licor6400 terminology), if it is 1, leaves have stomata only on one side (hypostomatous), 2 for leaves with stomata on both sides (amphistomatous).}
 
 \item{...}{Further parameters passed to \code{plantecophys::Photosyn}.}
 }

@@ -55,6 +55,7 @@ hydraulic_cost = function(P,
 #' @description Calculates the normalized thermal cost based on F0-T curve
 #'
 #' @inheritParams hydraulic_cost
+#' @inheritParams calc_Tleaf
 #' @param VPD Air vapor pressure deficit, kPa
 #' @param PPFD Photosynthetic photon flux density, mu mol m-2 s-1
 #' @param Patm Atmospheric pressure, kPa
@@ -91,13 +92,19 @@ thermal_cost = function(P,
                         LeafAbs = 0.5,
                         Tcrit = 50,
                         T50  = 51,
-                        constant_kmax = FALSE
+                        constant_kmax = FALSE,
+                        albedo = 0.15,
+                        epsilon = 0.97,
+                        gs_feedback = TRUE,
+                        StomatalRatio = 2
                         )
 {
   # Calculate Tleaf over the transpiration supply stream
   E = trans_from_vc(P, kmax_25, Tair, b, c, constant_kmax)
   Tleaf = calc_Tleaf(Tair = Tair, VPD = VPD, PPFD = PPFD, E = E, Wind = Wind,
-                      Patm = Patm, Wleaf = Wleaf, LeafAbs = LeafAbs)
+                     Patm = Patm, Wleaf = Wleaf, LeafAbs = LeafAbs,
+                     albedo = albedo, epsilon = epsilon,
+                     gs_feedback = gs_feedback, StomatalRatio = StomatalRatio)
 
   # Calculate thermal cost
   r = 2 / (T50 - Tcrit)
@@ -151,12 +158,18 @@ C_gain = function(P,
                   Rd0 = 0.92,
                   TrefR = 25,
                   netOrig = TRUE,
+                  albedo = 0.15,
+                  epsilon = 0.97,
+                  gs_feedback = TRUE,
+                  StomatalRatio = 2,
                   ...
                   )
 {
   E = trans_from_vc(P, kmax_25, Tair, b, c, constant_kmax)
   A = calc_A(Tair, VPD, PPFD, Patm, E, Wind, Wleaf, LeafAbs,
-             Ca, Jmax, Vcmax, net, Rd0, TrefR, netOrig, ...)
+             Ca, Jmax, Vcmax, net, Rd0, TrefR, netOrig, albedo = albedo,
+             epsilon = epsilon, gs_feedback = gs_feedback,
+             StomatalRatio = StomatalRatio, ...)
   E = ifelse(E == 0, NA, E)
   A = ifelse(E == 0, NA, A)
   Amax = if (is.null(Amax)) {
@@ -311,6 +324,10 @@ calc_costgain = function(
     EdVJ=2e5,
     delsJ=635,
     constr_Ci = FALSE,
+    albedo = 0.15,
+    epsilon = 0.97,
+    gs_feedback = TRUE,
+    StomatalRatio = 2,
     ...
 )
 {
@@ -324,7 +341,10 @@ calc_costgain = function(
 
   # Thermal cost
   TC = thermal_cost(P, b, c, kmax_25, Tair, VPD, PPFD, Patm,
-                    Wind, Wleaf, LeafAbs, Tcrit, T50, constant_kmax = FALSE)
+                    Wind, Wleaf, LeafAbs, Tcrit, T50, constant_kmax = FALSE,
+                    albedo = albedo, epsilon = epsilon,
+                    gs_feedback = gs_feedback, StomatalRatio = StomatalRatio,
+                    ...)
 
   # Carbon gains
   if(isFALSE(constr_Ci)) {
@@ -354,6 +374,8 @@ calc_costgain = function(
       Vcmax=Vcmax,EaV=EaV,EdVC=EdVC,delsC=delsC,
       Jmax = Jmax,EaJ=EaJ,EdVJ=EdVJ,delsJ=delsJ,
       constant_kmax = FALSE, net = TRUE, netOrig = TRUE, new_JT = FALSE,
+      albedo = albedo, epsilon = epsilon,
+      gs_feedback = gs_feedback, StomatalRatio = StomatalRatio,
       ...)
     CG_net_newJT = C_gain(
       P, b, c, kmax_25 = kmax_25,
@@ -363,6 +385,8 @@ calc_costgain = function(
       Vcmax=Vcmax,EaV=EaV,EdVC=EdVC,delsC=delsC,
       Jmax = Jmax,EaJ=EaJ,EdVJ=EdVJ,delsJ=delsJ,
       constant_kmax = FALSE, net = TRUE, netOrig = TRUE, new_JT = TRUE,
+      albedo = albedo, epsilon = epsilon,
+      gs_feedback = gs_feedback, StomatalRatio = StomatalRatio,
       ...)
   } else {
     CG_gross_constkmax = C_gain_alt(

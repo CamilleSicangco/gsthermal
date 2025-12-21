@@ -14,7 +14,9 @@ calc_Tleaf(
   Wleaf = 0.025,
   LeafAbs = 0.5,
   albedo = 0.15,
-  epsilon = 0.97
+  epsilon = 0.97,
+  gs_feedback = TRUE,
+  StomatalRatio = 2
 )
 }
 \arguments{
@@ -37,6 +39,10 @@ calc_Tleaf(
 \item{albedo}{Leaf albedo, unitless}
 
 \item{epsilon}{Leaf emissivity, unitless}
+
+\item{gs_feedback}{TRUE or FALSE}
+
+\item{StomatalRatio}{The stomatal ratio (cf. Licor6400 terminology), if it is 1, leaves have stomata only on one side (hypostomatous), 2 for leaves with stomata on both sides (amphistomatous).}
 }
 \value{
 Leaf temperature, deg C

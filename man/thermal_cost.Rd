@@ -18,7 +18,11 @@ thermal_cost(
   LeafAbs = 0.5,
   Tcrit = 50,
   T50 = 51,
-  constant_kmax = FALSE
+  constant_kmax = FALSE,
+  albedo = 0.15,
+  epsilon = 0.97,
+  gs_feedback = TRUE,
+  StomatalRatio = 2
 )
 }
 \arguments{
@@ -51,6 +55,14 @@ thermal_cost(
 
 \item{constant_kmax}{TRUE if the kmax does not vary with temperature for
 simulations; else FALSE}
+
+\item{albedo}{Leaf albedo, unitless}
+
+\item{epsilon}{Leaf emissivity, unitless}
+
+\item{gs_feedback}{TRUE or FALSE}
+
+\item{StomatalRatio}{The stomatal ratio (cf. Licor6400 terminology), if it is 1, leaves have stomata only on one side (hypostomatous), 2 for leaves with stomata on both sides (amphistomatous).}
 }
 \value{
 Normalized thermal cost, unitless

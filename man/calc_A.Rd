@@ -24,6 +24,10 @@ calc_A(
   g0 = 0.003,
   g_w = NULL,
   Tleaf = NULL,
+  albedo = 0.15,
+  epsilon = 0.97,
+  gs_feedback = TRUE,
+  StomatalRatio = 2,
   ...
 )
 }
@@ -67,6 +71,14 @@ is gross photosynthesis}
 \item{g_w}{Stomatal conductance to water vapor (mol m-2 s-1)}
 
 \item{Tleaf}{Leaf temperature (deg C)}
+
+\item{albedo}{Leaf albedo, unitless}
+
+\item{epsilon}{Leaf emissivity, unitless}
+
+\item{gs_feedback}{TRUE or FALSE}
+
+\item{StomatalRatio}{The stomatal ratio (cf. Licor6400 terminology), if it is 1, leaves have stomata only on one side (hypostomatous), 2 for leaves with stomata on both sides (amphistomatous).}
 
 \item{\dots}{Further parameters passed to \code{plantecophys::Photosyn}.}
 }
