@@ -169,7 +169,8 @@ leaf_energy_balance = function(
   Boltz <- 5.67 * 10^-8     # w M-2 K-4
   Emissivity <- 0.95        # unitless
   LatEvap <- 2.54           # MJ kg-1
-  CPAIR <- 1010             # J kg-1 K-1
+  #CPAIR <- 1010             # J kg-1 K-1
+  CPAIR <- 29.29            # J mol-1 K-1
 
   H2OLV0 <- 2501000         # J kg-1
   H2OMW <- 0.018            # J kg-1
@@ -239,13 +240,30 @@ leaf_energy_balance = function(
   Y <- 1/(1 + Gradiation/Gbh)
   H2 <- Y * (Rnetiso - lambdaET)
 
-  # Heat flux calculated from leaf-air T difference.
-  # (positive flux is heat loss from leaf)
-  H <- -CPAIR * AIRDENS * (Gbh/CMOLAR) * (Tair - Tleaf)
+  if(isFALSE(gs_feedback)) {
+    # Heat flux calculated from leaf-air T difference.
+    # (positive flux is heat loss from leaf)
+    #H = (Tleaf - Tair)* (CPAIR * Gbh + lambdaET * SLOPE * Gbw / Patm)
+    #H = (Tleaf - Tair) * (CPAIR * (Gradiation + Gbh))
+    H <- (CPAIR *Gbh) * (Tleaf - Tair)
 
-  # Leaf-air temperature difference recalculated from energy balance.
-  # (same equation as above!)
-  Tleaf2 <- Tair + H2/(CPAIR * AIRDENS * (Gbh/CMOLAR))
+    # Leaf-air temperature difference recalculated from energy balance.
+    # (same equation as above!)
+    #Tleaf2 = Tair + H2 / (CPAIR * Gbh + lambdaET * SLOPE * Gbw / Patm)
+    #Tleaf2 <- Tair + H2/(CPAIR * (Gradiation + Gbh))
+    Tleaf2 <- Tair + H2/(CPAIR * Gbh)
+
+  } else {
+    # Heat flux calculated from leaf-air T difference.
+    # (positive flux is heat loss from leaf)
+    H <- (CPAIR *Gbh) * (Tleaf - Tair)
+    #H = (Tleaf - Tair) * (CPAIR * (Gradiation + Gbh))
+
+    # Leaf-air temperature difference recalculated from energy balance.
+    # (same equation as above!)
+    Tleaf2 <- Tair + H2/(CPAIR * Gbh)
+    #Tleaf2 <- Tair + H2/(CPAIR * (Gradiation + Gbh))
+  }
 
   # Difference between input Tleaf and calculated, this will be minimized.
   EnergyBal <- Tleaf - Tleaf2
