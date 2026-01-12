@@ -188,7 +188,8 @@ C_gain = function(P,
 }
 
 #' Carbon gain
-#' @description Calculates the normalized carbon gain with constrained Ci
+#' @description Calculates the normalized carbon gain with constrained Ci using
+#' a numeric solver
 #'
 #' @inheritParams C_gain
 #'
